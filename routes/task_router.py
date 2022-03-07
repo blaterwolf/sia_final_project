@@ -57,6 +57,7 @@ def create(task: CreateTask, db: Session = Depends(get_db), current_user: User =
         (str): Task created successfully.
     """
     try:
+        # get the current user logged in's id
         author_id = current_user['author_id']
         new_task = Task(
             author_id=author_id,

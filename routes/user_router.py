@@ -4,6 +4,13 @@ from schemas.user_schema import CreateUser
 from models.user_model import User
 from database import get_db
 from dependencies import get_token
+from passlib.context import CryptContext
+
+pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
+
+
+def password_hash(password):
+    return pwd_context.hash(password)
 
 
 router = APIRouter(
@@ -14,7 +21,7 @@ router = APIRouter(
 
 
 @router.get('/')
-def all(db: Session = Depends(get_db), current_user: User = Depends(get_token)):
+def all(db: Session = Depends(get_db)):
     """Gets all users in the database.
 
     Args:
@@ -23,7 +30,6 @@ def all(db: Session = Depends(get_db), current_user: User = Depends(get_token)):
     Returns:
         (dict): All Users in the database.
     """
-    print(current_user)
     users = db.query(User).all()
     # # returns list of all users [{...}, {...}, {...}] <- list comprehension?
     return {'users': [
@@ -43,7 +49,7 @@ def find_by_id(current_user: User = Depends(get_token), db: Session = Depends(ge
     """Gets user information of the currently logged in user.
 
     Args:
-        id (str): UUID based ID from the database
+        current_user: currently logged in user
         db: Session object where cinacall niya yung database.
 
     Raises:
@@ -83,7 +89,7 @@ def update(user: CreateUser, db: Session = Depends(get_db), current_user: User =
     """
     if not db.query(User).filter(User.user_id == current_user['author_id']).update({
         'user_name': user.user_name,
-        'password': user.password
+        'password': password_hash(user.password)
     }):
         raise HTTPException(404, 'User not found. Failed to update.')
     db.commit()

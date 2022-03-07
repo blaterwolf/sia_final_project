@@ -28,13 +28,24 @@ router = APIRouter(
 
 @router.post('/signup')
 def signup(request: CreateUser, db: Session = Depends(get_db)):
+    """Signs Up user to the system and insert it to the database.
+
+    Args:
+        request (CreateUser): gets the Request data from the client.
+        db: Session object where cinacall niya yung database.
+
+    Returns:
+        json['message']: Sign Up Successful
+    """
     try:
-        print(request.user_name, request.password)
+        # Turn regular string password to Hashed Password version.
         request.password = password_hash(request.password)
+        # bind the request data to the User model.
         user = User(
             user_name=request.user_name,
             password=request.password
         )
+        # send the model to the database
         db.add(user)
         db.commit()
         return {'message': 'Sign Up Successful!'}
@@ -44,7 +55,18 @@ def signup(request: CreateUser, db: Session = Depends(get_db)):
 
 @router.post('/login')
 def login(form: AuthForm, response: Response, db: Session = Depends(get_db)):
+    """Login the user to the network.
+
+    Args:
+        form (AuthForm): Request body: gets the user_name and password
+        response (Response): To be used for setting cookies in the browswer.
+        db: Session object where cinacall niya yung database.
+
+    Returns:
+        json['message']: Login Success.
+    """
     try:
+        # Get the user from the database.
         user = db.query(User).filter(User.user_name == form.user_name).first()
         if user:
             match = password_verify(form.password, user.password)

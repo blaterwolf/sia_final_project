@@ -1,0 +1,29 @@
+Request body for the followins scenarios:
+
+Signup/Login
+{
+    "user_name": "George Davidson",
+    "password": "gogymaster111"
+}
+
+{
+    "user_name": "Josiah Fallesgon",
+    "password": "josh_hehe"
+}
+
+Task Creation:
+{
+    "task_name": "Code latest video idea"
+}
+
+Task Update:
+{
+    "task_id": "5ac99347-9d18-11ec-a74a-089798dc0fd5",
+    "task_name": "Achieve 5K steps today.",
+    "task_is_complete": true
+}
+
+Task Delete:
+{
+    "task_name": "create content for youtube video"
+}
